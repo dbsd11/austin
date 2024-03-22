@@ -2,6 +2,7 @@ package com.java3y.austin.web.config;
 
 import io.swagger.annotations.ApiModel;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
@@ -12,6 +13,7 @@ import springfox.documentation.service.ApiInfo;
 import springfox.documentation.service.Contact;
 import springfox.documentation.spi.DocumentationType;
 import springfox.documentation.spring.web.plugins.Docket;
+import springfox.documentation.swagger2.configuration.Swagger2DocumentationConfiguration;
 
 
 /**
@@ -20,7 +22,6 @@ import springfox.documentation.spring.web.plugins.Docket;
  * @author 3y
  */
 @Component
-@ConditionalOnProperty(value = "swagger.enabled", havingValue = "true", matchIfMissing = true)
 @EnableOpenApi
 @ApiModel
 public class SwaggerConfiguration {
@@ -32,12 +33,12 @@ public class SwaggerConfiguration {
      * @return
      */
     @Bean
-    public Docket webApiDoc() {
+    public Docket webApiDoc(@Value("${swagger.enabled:true}") Boolean enabled) {
         return new Docket(DocumentationType.OAS_30)
                 .groupName("用户端接口文档")
                 .pathMapping("/")
                 //定义是否开启Swagger，false是关闭，可以通过变量去控制，线上关闭
-                .enable(true)
+                .enable(enabled)
                 //配置文档的元信息
                 .apiInfo(apiInfo())
                 .select()
