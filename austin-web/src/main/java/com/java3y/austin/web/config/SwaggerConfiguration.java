@@ -1,6 +1,8 @@
 package com.java3y.austin.web.config;
 
 import io.swagger.annotations.ApiModel;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Component;
 import springfox.documentation.builders.ApiInfoBuilder;
@@ -18,6 +20,7 @@ import springfox.documentation.spring.web.plugins.Docket;
  * @author 3y
  */
 @Component
+@ConditionalOnProperty(value = "swagger.enabled", havingValue = "true", matchIfMissing = true)
 @EnableOpenApi
 @ApiModel
 public class SwaggerConfiguration {
