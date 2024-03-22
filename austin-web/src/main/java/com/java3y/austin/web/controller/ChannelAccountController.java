@@ -19,6 +19,9 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -69,6 +72,7 @@ public class ChannelAccountController {
         creator = CharSequenceUtil.isBlank(creator) ? AustinConstant.DEFAULT_CREATOR : creator;
 
         List<ChannelAccount> channelAccounts = channelAccountService.queryByChannelType(channelType, creator);
+        channelAccounts.forEach(channelAccount -> channelAccount.setAccountConfig("创建时间：" + LocalDateTime.ofEpochSecond(channelAccount.getCreated(), 0, ZoneOffset.ofHours(8)).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + " 更新时间: " + LocalDateTime.ofEpochSecond(channelAccount.getUpdated(), 0, ZoneOffset.ofHours(8)).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
         return Convert4Amis.getChannelAccountVo(channelAccounts, channelType);
     }
 
@@ -83,8 +87,9 @@ public class ChannelAccountController {
 
         }
         creator = CharSequenceUtil.isBlank(creator) ? AustinConstant.DEFAULT_CREATOR : creator;
-
-        return channelAccountService.list(creator);
+        List<ChannelAccount> channelAccounts = channelAccountService.list(creator);
+        channelAccounts.forEach(channelAccount -> channelAccount.setAccountConfig("创建时间：" + LocalDateTime.ofEpochSecond(channelAccount.getCreated(), 0, ZoneOffset.ofHours(8)).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME) + " 更新时间: " + LocalDateTime.ofEpochSecond(channelAccount.getUpdated(), 0, ZoneOffset.ofHours(8)).format(DateTimeFormatter.ISO_LOCAL_DATE_TIME)));
+        return channelAccounts;
     }
 
     /**
@@ -99,5 +104,4 @@ public class ChannelAccountController {
             channelAccountService.deleteByIds(idList);
         }
     }
-
 }
