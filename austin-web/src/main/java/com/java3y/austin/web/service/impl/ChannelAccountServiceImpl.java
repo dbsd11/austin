@@ -4,9 +4,14 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.java3y.austin.common.constant.AustinConstant;
 import com.java3y.austin.common.constant.CommonConstant;
+import com.java3y.austin.common.enums.RespStatusEnum;
 import com.java3y.austin.support.dao.ChannelAccountDao;
 import com.java3y.austin.support.domain.ChannelAccount;
+import com.java3y.austin.web.exception.CommonException;
+import com.java3y.austin.web.interceptor.TokenInterceptor;
 import com.java3y.austin.web.service.ChannelAccountService;
+
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +32,12 @@ public class ChannelAccountServiceImpl implements ChannelAccountService {
         if (Objects.isNull(channelAccount.getId())) {
             channelAccount.setCreated(Math.toIntExact(DateUtil.currentSeconds()));
             channelAccount.setIsDeleted(CommonConstant.FALSE);
+        }
+        if(channelAccount.getId() != null) {
+            ChannelAccount dbChannelAccount = channelAccountDao.findById(channelAccount.getId()).orElse(null);
+            if(!StringUtils.equalsIgnoreCase(dbChannelAccount.getCreator(), TokenInterceptor.CREAT_THREAD_LOCAL.get())) {
+                throw new CommonException(RespStatusEnum.CLIENT_BAD_PARAMETERS);
+            }
         }
         channelAccount.setCreator(CharSequenceUtil.isBlank(channelAccount.getCreator()) ? AustinConstant.DEFAULT_CREATOR : channelAccount.getCreator());
         channelAccount.setUpdated(Math.toIntExact(DateUtil.currentSeconds()));
